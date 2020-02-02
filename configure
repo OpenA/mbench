@@ -1,0 +1,50 @@
+#!/bin/sh
+
+CC=gcc
+MARCH=64
+CFLAGS="-O3"
+mptr="-m"
+
+for i in "$@"; do
+  case $i in
+    -cflags=*)
+      CFLAGS="${i#*=}"
+      ;;
+    "-m32")
+      MARCH=32
+      ;;
+    -cc=*)
+      CC="${i#*=}"
+      ;;
+    *)
+      # unknown option
+      ;;
+  esac
+done
+
+CC=`which $CC`
+
+echo ""
+echo "  architecture   : $MARCH"
+echo "  compiler flags : $CFLAGS"
+if [ -e $CC ]; then
+echo "  compiler       : $CC"
+else
+echo "  compiler       : no"
+exit
+fi
+
+gcc_comp=`$CC -dumpversion`
+
+if [ $gcc_comp != "" ]; then
+echo "  compatibility  : yes (GCC $gcc_comp)"
+fi
+
+gcc_comp=$(expr `echo "$gcc_comp" | sed -e 's/\.\([0-9]\)/0\1/g'` \>= 50500)
+
+if [ !$gcc_comp ]; then
+mptr="-mptr"
+fi
+echo ""
+
+`sed "s#@@MARCH@@#$MARCH#" Makefile.in | sed "s#@@CC@@#$CC#" | sed "s#@@CFLAGS@@#$CFLAGS#" | sed "s#@@mptr@@#$mptr#" > Makefile`

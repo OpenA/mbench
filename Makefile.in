@@ -1,0 +1,22 @@
+
+MARCH    = @@MARCH@@
+CC       = @@CC@@
+CFLAGS   = @@CFLAGS@@
+COMPILER = $(shell $(CC) --version | head -n 1)
+CVARS    = @@mptr@@$(MARCH) -D_MARCH_='"$(MARCH)"' -D_COMPILER_='"$(COMPILER)"'
+DIR      = build/
+
+all:
+	mkdir -p $(DIR)
+	$(CC) openmp/OpenMPMFLOPS.c $(CVARS) $(CFLAGS) -o $(DIR)singleOPmflops$(MARCH)
+	$(CC) openmp/OpenMPMFLOPS.c $(CVARS) $(CFLAGS) -D_OMP_ -fopenmp -o $(DIR)openMPmflops$(MARCH)
+	$(CC) eliotest/eliotest.c $(CVARS) $(CFLAGS) -lm -o $(DIR)eliotest$(MARCH)
+	$(CC) memspeed/memSpeed.c $(CVARS) $(CFLAGS) -D_INT$(MARCH)_ -o $(DIR)memSpeed$(MARCH)
+	$(CC) memspeed/memSpeed.c $(CVARS) $(CFLAGS) -D_INT$(MARCH)_ -D_OMP_ -fopenmp -o $(DIR)memSpeed$(MARCH)_OMP
+ifeq ($(MARCH),64)
+	$(CC) memspeed/memSpeed.c $(CVARS) $(CFLAGS) -D_INT64_ -D_AVX_ -mavx -o $(DIR)memSpeed64_AVX
+	$(CC) memspeed/memSpeed.c $(CVARS) $(CFLAGS) -D_INT64_ -D_AVX_ -mavx -D_OMP_ -fopenmp -o $(DIR)memSpeed64_AVXOMP
+endif
+
+clean:
+	rm -rf $(DIR)singleOPmflops* $(DIR)openMPmflops* $(DIR)eliotest* $(DIR)memSpeed*
