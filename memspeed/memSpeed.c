@@ -21,15 +21,6 @@
 	#define _EXTLIST_ "SSE "
 #endif
 
-//  #define version  "64 Bit Version 4.1"
-//  #define version  "64 Bit OPenMP v4.1"
-//  #define version  "64 Bit AVX v4.1"
-//  #define version  "64 Bit AVX OMP v4.1"
-
-//  #define version  "32 Bit Version 4.1"
-//  #define version  "32 Bit OPenMP v4.1"
-//  #define BITS32   // See later needed to limit allocated memory
-
 #ifdef _INT64_
 	typedef long long IntM_t;
 #else
